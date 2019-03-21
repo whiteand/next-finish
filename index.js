@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.default = middleware;
+exports = middleware;
 
 function _toConsumableArray(arr) {
   return (
