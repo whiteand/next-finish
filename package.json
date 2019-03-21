@@ -1,6 +1,6 @@
 {
   "name": "next-finish",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Function for creating a middleware-like transformation with the result",
   "main": "index.js",
   "scripts": {

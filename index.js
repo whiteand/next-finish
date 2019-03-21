@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+
 module.exports = middleware;
 
 function _toConsumableArray(arr) {
@@ -111,7 +112,7 @@ function middleware() {
 
     throw new TypeError(
       "middleware takes only functions or [cond, handler], but " +
-        i +
+      ind +
         "-th parameter is not a function or [cond, handler]"
     );
   });
