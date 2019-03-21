@@ -3,7 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports = middleware;
+module.exports = middleware;
 
 function _toConsumableArray(arr) {
   return (
@@ -32,35 +32,100 @@ function _arrayWithoutHoles(arr) {
   }
 }
 
+function _slicedToArray(arr, i) {
+  return (
+    _arrayWithHoles(arr) || _iterableToArrayLimit(arr, i) || _nonIterableRest()
+  );
+}
+
+function _nonIterableRest() {
+  throw new TypeError("Invalid attempt to destructure non-iterable instance");
+}
+
+function _iterableToArrayLimit(arr, i) {
+  var _arr = [];
+  var _n = true;
+  var _d = false;
+  var _e = undefined;
+  try {
+    for (
+      var _i = arr[Symbol.iterator](), _s;
+      !(_n = (_s = _i.next()).done);
+      _n = true
+    ) {
+      _arr.push(_s.value);
+      if (i && _arr.length === i) break;
+    }
+  } catch (err) {
+    _d = true;
+    _e = err;
+  } finally {
+    try {
+      if (!_n && _i["return"] != null) _i["return"]();
+    } finally {
+      if (_d) throw _e;
+    }
+  }
+  return _arr;
+}
+
+function _arrayWithHoles(arr) {
+  if (Array.isArray(arr)) return arr;
+}
+
 function middleware() {
   for (
-    var _len = arguments.length, fs = new Array(_len), _key = 0;
+    var _len = arguments.length, fsOrConditional = new Array(_len), _key = 0;
     _key < _len;
     _key++
   ) {
-    fs[_key] = arguments[_key];
+    fsOrConditional[_key] = arguments[_key];
   }
 
-  return function() {
-    for (
-      var _len2 = arguments.length, args = new Array(_len2), _key2 = 0;
-      _key2 < _len2;
-      _key2++
-    ) {
-      args[_key2] = arguments[_key2];
+  var fs = fsOrConditional.map(function(f, ind) {
+    if (typeof f === "function") return f;
+
+    if (Array.isArray(f) && f.length === 2) {
+      var _f = _slicedToArray(f, 2),
+        cond = _f[0],
+        handler = _f[1];
+
+      return function(n, f) {
+        for (
+          var _len2 = arguments.length,
+            args = new Array(_len2 > 2 ? _len2 - 2 : 0),
+            _key2 = 2;
+          _key2 < _len2;
+          _key2++
+        ) {
+          args[_key2 - 2] = arguments[_key2];
+        }
+
+        if (cond.apply(void 0, args)) {
+          f(handler.apply(void 0, args));
+        }
+
+        n.apply(void 0, args);
+      };
     }
 
-    for (var i = 0; i < fs.length; i += 1) {
-      var currentF = fs[i];
+    throw new TypeError(
+      "middleware takes only functions or [cond, handler], but " +
+        i +
+        "-th parameter is not a function or [cond, handler]"
+    );
+  });
+  return function() {
+    for (
+      var _len3 = arguments.length, args = new Array(_len3), _key3 = 0;
+      _key3 < _len3;
+      _key3++
+    ) {
+      args[_key3] = arguments[_key3];
+    }
 
-      if (typeof currentF !== "function") {
-        throw new TypeError(
-          "middleware takes only functions, but " +
-            i +
-            "-th parameter is not a function"
-        );
-      }
-
+    for (var _i2 = 0; _i2 < fs.length; _i2 += 1) {
+      var currentF = fs[_i2];
       var isFinished = false,
         finishArgs = [],
         isNext = false,
@@ -70,11 +135,11 @@ function middleware() {
         isFinished = true;
 
         for (
-          var _len3 = arguments.length, args = new Array(_len3), _key3 = 0;
-          _key3 < _len3;
-          _key3++
+          var _len4 = arguments.length, args = new Array(_len4), _key4 = 0;
+          _key4 < _len4;
+          _key4++
         ) {
-          args[_key3] = arguments[_key3];
+          args[_key4] = arguments[_key4];
         }
 
         finishArgs = args;
@@ -84,11 +149,11 @@ function middleware() {
         isNext = true;
 
         for (
-          var _len4 = arguments.length, args = new Array(_len4), _key4 = 0;
-          _key4 < _len4;
-          _key4++
+          var _len5 = arguments.length, args = new Array(_len5), _key5 = 0;
+          _key5 < _len5;
+          _key5++
         ) {
-          args[_key4] = arguments[_key4];
+          args[_key5] = arguments[_key5];
         }
 
         nextArgs = args;

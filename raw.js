@@ -1,11 +1,23 @@
 
-export default function middleware(...fs) {
+export default function middleware(...fsOrConditional) {
+  const fs = fsOrConditional.map((f, ind) => {
+    if (typeof f === 'function') return f
+
+    if (Array.isArray(f) && f.length === 2) {
+      const [cond, handler] = f
+      return (n, f, ...args) => {
+        if (cond(...args)) {
+          f(handler(...args))
+        }
+        n(...args)
+      }
+    }
+
+    throw new TypeError('middleware takes only functions or [cond, handler], but ' + i + '-th parameter is not a function or [cond, handler]')
+  })
   return (...args) => {
     for (let i = 0; i < fs.length; i += 1) {
       const currentF = fs[i];
-      if (typeof currentF !== 'function') {
-        throw new TypeError('middleware takes only functions, but ' + i + '-th parameter is not a function')
-      }
 
       let isFinished = false,
           finishArgs = [],
